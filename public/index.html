@@ -1,0 +1,249 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>Eventonica</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="index.css">
+        <link rel="icon" href="event-recommender-browser-image.png" sizes="16x16" type="image/png">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans|Quicksand&display=swap" rel="stylesheet">
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script>moment().format();</script>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="src/jQuery-scripts.js"></script>
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="">Eventonica</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="#user-management-header">User Management <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="#event-management-header">Event Management <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="#event-ticketmaster-header">Events from Ticketmaster <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="#event-search-and-save-header">Event Search and Save <span class="sr-only">(current)</span></a>
+                </li>
+              </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="row main-section">
+                <div class="col mx-auto col-md-6 order-md-2 text-center main-section">
+                    <img src="event-recommender-image.png" alt="event-image">
+                </div>
+                <div class="col-md-6 order-md-1 text-center text-md-left pr-md-5 main-section">
+                    <h1>Event Recommender</h1>
+                    <p>Eventonica is a web app to manage events. Users of the site will be able to add and delete events, mark themselves as attending events, search for events, and see which events are most popular.</p>
+                </div>
+            </div>
+
+            <br>
+
+            <h2 id="user-management-header">User Management</h2>
+            <div class="row">
+
+                <div class="col">
+                    <h3>All Users</h3>
+                    <ul id="all-users">
+                        <!-- Use jQuery to display all Users here -->
+                    </ul>
+                </div>
+             
+                <div class="col add-delete-right">
+                    <div>
+                        <h3>Add User</h3>
+                        <form id="add-user" action="/user" method='POST'>
+                            <label for="add-user-id">User ID:</label>
+                            <input type="number" id="add-user-id" name="userid">
+                            <br/>
+                            <label for="add-user-name">User name:</label>
+                            <input type="text" id="add-user-name" name="username" required>
+                            <br/>
+                            <input type="submit" id="add-user-submit" value="Add User">
+                        </form>
+                    </div>
+            
+                    <div>
+                        <h3>Delete User</h3>
+                        <form id="delete-user" action="/user" method='DELETE'>
+                            <label for="delete-user-id">User ID:</label>
+                            <input type="text" id="delete-user-id" name="userid" required>
+                            <br/>
+                            <input type="submit" id="delete-user-submit" value="Delete User">
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+    
+            <h2 id="event-management-header">Event Management</h2>
+            <div class="row">
+                <div class="col">
+                    <h3>All Events</h3>
+                    <ul id="all-events">
+                        <!-- Use jQuery to display all Events here -->
+                    </ul>
+                </div>
+    
+                <div class="col add-delete-right">
+                    <h3>Add Event</h3>
+                    <form id="add-event" action="/event" method="POST">
+                        <label for="add-event-id">Event ID:</label>
+                        <input type="number" min="1" id="add-event-id">
+                        <br/>
+                        <label for="add-event-name">Event name:</label>
+                        <input type="text" id="add-event-name" required>
+                        <br/>
+                        <label for="add-event-date">Event date:</label>
+                        <input type="date" id="add-event-date" required>
+                        <br/>
+                        <!-- <label for="add-event-category">Event category:</label>
+                        <input type="text" id="add-event-category" required> -->
+
+                        <label for="add-event-category">Event category:</label>
+                        <select id="add-event-category">
+                            <option value="Arts & Theatre">Arts & Theatre</option>
+                            <option value="Food and Drink">Food and Drink</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Music">Music</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Tech">Tech</option>
+                        </select>
+
+
+                        <br/>
+                        <label for="add-event-location">Event location:</label>
+                        <input type="text" id="add-event-location" required>
+                        <br/>
+                        <input type="submit" id="add-event-submit" value="Add Event">
+                    </form>
+                
+        
+                    <div>
+                        <h3>Delete Event</h3>
+                        <form id="delete-event" action="#all-events">
+                            <label for="delete-event-id">Event ID:</label>
+                            <input type="number" min="1" id="delete-event-id" required>
+                            <br/>
+                            <input type="submit" value="Delete Event">
+                        </form>
+                    </div>
+                </div>     
+            </div>
+        
+            <br>
+
+            <h2 id="event-ticketmaster-header">Events from Ticketmaster</h2>
+            <div class="row">
+                <div class="col">
+                    <h3>Search Events by Keyword</h3>
+                        <form class="form-inline" id="event-search" action="#event-search">
+                                <label>Event keyword:</label>
+                                <br>
+                                <input type="text" placeholder="Keyword" id="tm-event-keyword" aria-label="Ticketmaster-event-keyword">                        
+                                <br>
+                                
+                                <label for="tm-event-category">Event category:</label>
+                                <br>
+                                <select id="tm-event-category">
+                                    <option value=''>Please select a category</option>
+                                    <option value="arts & theatre">Arts & Theatre</option>
+                                    <option value="music">Music</option>
+                                    <option value="sports">Sports</option>
+                                </select>
+                                <input type="submit" id="event-keyword-submit" value="Search">
+                            </form>
+                    <h4>Results:</h4>
+                    <ul id="event-search-result">
+                        <!-- Use jQuery to add search results here-->
+                    </ul>
+                    <div id="btn"></div>
+                </div>
+            </div>
+
+            <br>
+
+            <h2 id="event-search-and-save-header">Event Search and Save</h2>
+            <div class="row">
+                <div class="col">
+                    <h3>Find Events by Date</h3>
+                    <form id="date-search" action="/events-by-date" method="GET">
+                        <label>Event date:</label>
+                        <br>
+                        <input type="text" placeholder="Year" id="date-search-year" aria-label="Year">
+                        <input type="text" placeholder="Month" id="date-search-month" aria-label="Month">
+                        <input type="text" placeholder="Day" id="date-search-day" aria-label="Day">
+                        <br/>
+                        <input type="submit" id="date-search-submit" value="Search">
+                    </form>
+                    <h4>Results:</h4>
+                    <ol id="date-search-result">
+                        <!-- Use jQuery to add search results here-->
+                    </ol>
+                </div>
+            
+    
+                <div class="col">
+                    <h3>Find Events by Category</h3>
+                    <form id="category-search" action="/events-by-category" method="GET">
+                        <label for="category-search-id">Event category:</label>
+                        <!-- <input type="text" id="category-search-id"> -->
+                        <select id="category-search-id">
+                            <option value="arts & theatre">Arts & Theatre</option>
+                            <option value="food and drink">Food and Drink</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="music">Music</option>
+                            <option value="sports">Sports</option>
+                            <option value="tech">Tech</option>
+                        </select>
+                        <br/>
+                        <input type="submit" id="category-search-submit" value="Search">
+                    </form>
+                    <h4>Results:</h4>
+                    <ol id="category-search-result">
+                        <!-- Use jQuery to add search results here-->
+                    </ol>
+                </div>
+            
+                <div class="col">
+                    <h3>Save Event for User</h3>
+                    <ul id="saved-events-users">
+                        <!-- Use jQuery to display all Users here -->
+                    </ul>
+                    <form id="save-user-event" action="#saved-events-users">
+                        <label for="save-user-id">User ID:</label>
+                        <input type="text" id="save-user-id">
+                        <br/>
+                        <label for="save-event-id">Event ID:</label>
+                        <input type="text" id="save-event-id">
+                        <br/>
+                        <input type="submit">
+                    </form>
+                </div>
+            </div>
+        </div>   
+        
+        <footer class="page-footer pt-4"></footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>  
+    </body>
+
+</html>
