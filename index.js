@@ -3,10 +3,10 @@ const { EventRecommender, User,  Event}  = require('./src/EventRecommender');
 const er = new EventRecommender();
 
 // some data to work with!
-er.addEvent({'eventName': "Some Magical Event", 'eventDate': {'year': 2020, 'month': 01, 'day': 01}, 'eventCategory': "Arts & Theatre", 'eventLocation': "A Magical World Somewhere", 'eventID': 11111});
-er.addEvent({'eventName': "Corgi Con", 'eventDate': {'year': 2019, 'month': 10, 'day': 19}, 'eventCategory': "Sports", 'eventLocation': "San Francisco", 'eventID': 22222});
-er.addUser("Lisa", 12345);
-er.addUser("Kim", 12346); 
+// er.addEvent({'eventName': "Some Magical Event", 'eventDate': {'year': 2020, 'month': 01, 'day': 01}, 'eventCategory': "Arts & Theatre", 'eventLocation': "A Magical World Somewhere", 'eventID': 11111});
+// er.addEvent({'eventName': "Corgi Con", 'eventDate': {'year': 2019, 'month': 10, 'day': 19}, 'eventCategory': "Sports", 'eventLocation': "San Francisco", 'eventID': 22222});
+// er.addUser("Lisa", 12345);
+// er.addUser("Kim", 12346); 
 // er.saveUserEvent(12345, 11111);
 
 // MIDDLEWARE
@@ -44,53 +44,50 @@ app.use(express.static('public'))
 
 // gets array of all users (each user is an object). returns an array
 app.get('/users', (req, res) => {
-    er.getAllUsers().then( transformedData => res.json(transformedData));
+    er.getAllUsers().then( transformedData => res.status(200).send(transformedData));
 })
 
 // adds one user (key = 'username', value = name of user as a string)
 // input taken from body
-// userID is optional
 // does not return anything
-app.post('/user', (req, res) => {
+app.post('/user', async (req, res) => {
     const userName = req.body.userName;
-    const userID = parseInt(req.body.userID);
-    er.addUser(userName, userID)
-
+    // const userID = parseInt(req.body.userID);
+    await er.addUser(userName);
     res.status(200).send('User is added to the "database"');
 });
 
 // deletes one user by userID (number)
-app.delete('/user', (req, res) => {
+app.delete('/user', async (req, res) => {
     const user = parseInt(req.body.userID);
-    
-    if(er.users.includes(er.getUserByID(user))) {
-        er.deleteUser(user);
-        res.status(200).send('User is deleted from the "database"');
-    } else {
-        res.status(400).send('User was not found');
-    }
+    await er.deleteUser(user);
+    res.sendStatus(200);
 })
 
 // gets array of all event objects
 app.get('/events', (req, res) => {
-    res.json(er.events) // is a json string of an array
+    // res.json(er.events) // is a json string of an array
+    er.getAllEvents().then( transformedData => res.json(transformedData));
 })
 
 // adds one event, does not return anything 
 // required parameter: eventDate ({'year': number, 'month': number, 'day': number}), eventName (string), eventCategory (string), eventLocation (string))
 // eventID (number) is optional. will randomly assign ID if none is provided
-app.post('/event', (req, res) => {
+app.post('/event', async (req, res) => {
     // Works for now but would be a pain to add more parameters 
-    let {eventID, eventName, eventCategory, eventLocation, eventDate} = req.body;
+    // let {eventID, eventName, eventCategory, eventLocation, eventDate} = req.body;
+    let {eventName, eventCategory, eventLocation, eventDate} = req.body;
+    console.log("/event req.body: ", req.body);
 
     // year, month, day come in as strings, change to number
-    let {year, month, day} = eventDate;
-    year = parseInt(year);
-    month = parseInt(month);
-    day = parseInt(day);
-    eventDate = {'year': year, 'month': month, 'day': day};
+    // let {year, month, day} = eventDate;
+    // year = parseInt(year);
+    // month = parseInt(month);
+    // day = parseInt(day);
+    // eventDate = {'year': year, 'month': month, 'day': day};
 
-    er.addEvent({'eventID': parseInt(eventID), 'eventDate': eventDate, 'eventName': eventName, 'eventCategory': eventCategory, 'eventLocation': eventLocation});
+    // er.addEvent({'eventID': parseInt(eventID), 'eventDate': eventDate, 'eventName': eventName, 'eventCategory': eventCategory, 'eventLocation': eventLocation});
+    await er.addEvent({'eventName': eventName, 'eventDate': eventDate, 'eventCategory': eventCategory, 'eventLocation': eventLocation});
     
     // er.addEvent(req.body); // would be better this way but would need to change the code that creates the random ID otherwise NaN will be displayed. But I don't want to do that right now
     res.status(200).send('Event is added to the "database"');
@@ -98,14 +95,16 @@ app.post('/event', (req, res) => {
 
 // deleted one event by eventID (number)
 // does not return anything
-app.delete('/event/', (req, res) => {
+app.delete('/event/', async (req, res) => {
     const event = parseInt(req.body.eventID);
-    if (er.events.includes(er.getEventByID(event))) {
-        er.deleteEvent(event);
-        res.status(200).send('Event is deleted from the "database"');
-    } else {
-        res.status(400).send('Event was not found');
-    }
+    await er.deleteEvent(event);
+    res.sendStatus(200);
+    // if (er.events.includes(er.getEventByID(event))) {
+    //     er.deleteEvent(event);
+    //     res.status(200).send('Event is deleted from the "database"');
+    // } else {
+    //     res.status(400).send('Event was not found');
+    // }
 })
 
 // get array of events by date 

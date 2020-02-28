@@ -30,25 +30,28 @@ $(document).ready( () => {
             contentType: 'application/x-www-form-urlencoded',
         });
 
-        request.done( () => console.log("success"))
-        request.fail( () => console.log("failed"))
-        
-        displayUsers()
+        request.done( () => {
+            console.log("successfully added user");
+            displayUsers();
+        })
+        request.fail( () => console.log("failed to add user"))
     })
         
     $("#delete-user").submit((e) => {
         e.preventDefault();
         let id = parseInt($("#delete-user-id").val());
-
+        
         let request = $.ajax( {
             method: "DELETE",
             url: '/user', 
             data: {'userID': id}
         });
 
-        request.done( () => console.log("success"))
-        request.fail( () => console.log("failed"))
-        displayUsers();
+        request.done( () => {
+            console.log("successfully deleted user", request.data);
+            displayUsers();
+        })
+        request.fail( () => console.log("failed to delete user", request.data))
     })
         
     function displayEvents() {
@@ -73,10 +76,12 @@ $(document).ready( () => {
         e.preventDefault();
         let id = parseInt($("#add-event-id").val());
         let name = $("#add-event-name").val();
-        let date = $("#add-event-date").val().split("-"); // SPLIT INTO YEAR, MONTH, DAY
+        // let date = $("#add-event-date").val().split("-"); // SPLIT INTO YEAR, MONTH, DAY
+        let eventDate = $("#add-event-date").val(); // create date string YYY-MM-DD to fit DB format
         let category = $("#add-event-category").val();
         let location = $("#add-event-location").val();
-        let eventDate = {'year': parseInt(date[0]), 'month': parseInt(date[1]) - 1, 'day': parseInt(date[2])};
+        // let eventDate = {'year': parseInt(date[0]), 'month': parseInt(date[1]) - 1, 'day': parseInt(date[2])};
+        console.log(eventDate);
         
 
         let request = $.ajax( {
@@ -86,10 +91,11 @@ $(document).ready( () => {
             contentType: 'application/x-www-form-urlencoded',
         });
 
-        request.done( () => console.log("success"))
+        request.done( () => {
+            console.log("success");
+            displayEvents()
+        })
         request.fail( () => console.log("failed"))
-
-        displayEvents()
     })
     
     $("#delete-event").submit((e) => {
@@ -101,7 +107,11 @@ $(document).ready( () => {
             data: {'eventID': id}
         })
 
-        displayEvents();
+        request.done( () => {
+            console.log("successfully deleted  event");
+            displayEvents();
+        })
+        request.fail( () => console.log("failed to delete event"))
     })
     
         
@@ -172,10 +182,9 @@ $(document).ready( () => {
                             });
                             request.done( () => {
                                 console.log("Added TM event");
-                                
+                                displayEvents()
                             })
                         }
-                        displayEvents()
                     })
                 }
             })

@@ -15,6 +15,7 @@ class EventRecommender {
         this.bookmarkedEvents = {}
     }
 
+    // USERS
     // return promise of users from users table in DB
     getAllUsers() {
         return db.any('SELECT * FROM users')
@@ -26,33 +27,94 @@ class EventRecommender {
             return transformedData;
         })
     }
-
-    // eventDate is {'year': YYYY, 'month': MM, 'day': DD}
-    addEvent({eventID, eventDate, eventName, eventCategory, eventLocation}) {
-    // Adds a new Event to the System
-        for(let event of this.events) {
-            if(event.eventID === eventID) {
-                return "This event already exists";
-            }
-        }
-        this.events.push(new Event(eventID, eventDate, eventName, eventCategory, eventLocation));
+    
+    addUser(userName) {
+        return db.none('INSERT INTO users (user_name) VALUES($1)', [userName])
+        .then(function() {
+            console.log("User is added to the database");    
+        })
+        .catch( error => {
+            console.log(error);
+        })
+    }
+    
+    deleteUser(userID) {
+        // this.users = this.users.filter(user => user.userID !== userID);
+        return db.result('DELETE FROM users WHERE user_id = $1', userID)
+        .then(result =>  {
+            // rowCount = number of rows affected by the query
+            console.log(result.rowCount)
+        })
+        .catch(error => {
+            console.log('ERROR:', error);
+        });
     }
 
-    // FIX THEN SECTION. CHECK IF PROMISE IS ACTUALLY HANDLED
-    addUser(userName, userID) {
-    // Adds a new User to the System if the user doesn't exist already
-        // for(let user of this.users) {
-        //     if(user.userID === userID) {
-        //         return "This user already exists";
-        //     }
-        // }
-        // this.users.push(new User(userName, userID));
-        return db.one('INSERT INTO users (user_name, user_id) VALUES($1, $2)', [userName, userID])
+    // returns row where user has userID. (not tested yet)
+    getUserByID(userID) {
+        // return this.users.filter(user => user.userID === userID)[0];
+        return db.one('SELECT * FROM users WHERE user_id = $1', userID)
+        // .then(result =>  {
+        //     // rowCount = number of rows affected by the query
+        //     console.log(result.rowCount)
+        // })
+        // .catch(error => {
+        //     console.log('ERROR:', error);
+        // });
+    }
+    
+    // EVENTS
+
+    // return promise of events from events table in DB
+    getAllEvents() {
+        return db.any('SELECT * FROM events')
         .then(function(data) {
-            console.log(data);    
+            // transforming users in DB with correct key;
+            let transformedData = data.map( row => {
+                return new Event(row.event_id, row.event_date, row.event_name, row.event_category, row.event_location)
+            })
+            return transformedData;
         })
     }
 
+
+    // eventDate is {'year': YYYY, 'month': MM, 'day': DD}
+    addEvent({eventDate, eventName, eventCategory, eventLocation}) {
+    // Adds a new Event to the System
+        // for(let event of this.events) {
+        //     if(event.eventID === eventID) {
+        //         return "This event already exists";
+        //     }
+        // }
+        // this.events.push(new Event(eventID, eventDate, eventName, eventCategory, eventLocation));
+        return db.none('INSERT INTO events (event_date, event_name, event_category, event_location) VALUES($1, $2, $3, $4)', [eventDate, eventName, eventCategory, eventLocation])
+        .then(function() {
+            console.log("Event is added to the database");    
+        })
+        .catch( error => {
+            console.log(error);
+        })
+
+    }
+
+    deleteEvent(eventID) {
+        // this.events = this.events.filter(event => event.eventID !== eventID);
+        return db.result('DELETE FROM events WHERE event_id = $1', eventID)
+        .then(result =>  {
+            console.log(result)
+        })
+        .catch(error => {
+            console.log('ERROR:', error);
+        });
+    }
+    
+    // returns event object
+    getEventByID(eventID) {
+        return this.events.filter(event => event.eventID === eventID)[0];
+    }
+    
+
+    // SAVE/SEARCH EVENTS
     // expects numbers for the ID's
     // initialize new Set if user never saved an event
     // add eventID to the Set for the user
@@ -66,28 +128,8 @@ class EventRecommender {
         }
         this.bookmarkedEvents[user.getUserID()].add(eventID);
     }
-
-    // returns user object
-    getUserByID(userID) {
-        return this.users.filter(user => user.userID === userID)[0];
-    }
     
-    // returns event object
-    getEventByID(eventID) {
-        return this.events.filter(event => event.eventID === eventID)[0];
-    }
 
-    deleteUser(userID) {
-        this.users = this.users.filter(user => user.userID !== userID);
-
-        // TO DO LATER: CHECK BOOKMARKED EVENTS AND DELETE THAT RECORD IF THE USER IS DELETED
-    }
-   
-    deleteEvent(eventID) {
-        this.events = this.events.filter(event => event.eventID !== eventID);
-         
-        // TO DO LATER CHECK BOOKMARKED EVENTS AND DELETE THAT EVENT FOR ALL USERS
-    }
 
     // return array of events that match 
     // pass in object of numbers since input fields take in year, month, day separately
