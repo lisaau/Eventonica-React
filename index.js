@@ -122,7 +122,9 @@ app.get('/events-by-date/', (req, res) => {
 // inputs are from params
 // returns an array
 app.get('/events-by-category/', (req, res) => {
-    res.json(er.findEventsByCategory(req.query.eventCategory))
+    console.log(req.query, req.query.eventCategory);
+    
+    er.findEventsByCategory(req.query.eventCategory).then( transformedData => res.json(transformedData));
 })
 
 

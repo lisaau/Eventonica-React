@@ -147,9 +147,18 @@ class EventRecommender {
     
     // Returns all events in a given category
     findEventsByCategory(eventCategory){
-        return this.events.filter(event => {
-            return event.eventCategory.toLowerCase() === eventCategory.toLowerCase();
-        });
+        // return this.events.filter(event => {
+        //     return event.eventCategory.toLowerCase() === eventCategory.toLowerCase();
+        // });
+
+        return db.any('SELECT * FROM events WHERE event_category = $1', eventCategory)
+        .then(function(data) {
+            // transforming users in DB with correct key;
+            let transformedData = data.map( row => {
+                return new Event(row.event_id, row.event_date, row.event_name, row.event_category, row.event_location)
+            })
+            return transformedData;
+        })
     }
 }
 
