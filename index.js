@@ -9,6 +9,7 @@ er.addUser("Lisa", 12345);
 er.addUser("Kim", 12346); 
 // er.saveUserEvent(12345, 11111);
 
+// MIDDLEWARE
 const bodyParser = require('body-parser');
 // const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
@@ -19,12 +20,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
 
 
+// DATABASE moved to EventRecommender.js
+// const pgp = require('pg-promise')(/* options */)
+// const db = pgp('postgres://tpl619_2@localhost:5432/eventonica')
+
 // serve static files
 app.use(express.static('public'))
     
+// test db query
+// db.any('SELECT * FROM users')
+//     .then(function(data) {
+//         // users in DB;
+//         console.log(data);
+        
+//     })
+//     .catch(function(error) {
+//         // error;
+//         console.log("failed");
+        
+//     });
+// console.log(er.users); // users in ER
+
+
 // gets array of all users (each user is an object). returns an array
 app.get('/users', (req, res) => {
-    res.json(er.users); // is a json string of an array
+    er.getAllUsers().then( transformedData => res.json(transformedData));
 })
 
 // adds one user (key = 'username', value = name of user as a string)
@@ -114,7 +134,7 @@ app.get('/events-by-category/', (req, res) => {
 app.put('/bookmarked', (req, res) => {
     const userID = parseInt(req.query.userID);
     const eventID = parseInt(req.query.eventID);
-
+    
     if (er.getEventByID(eventID) && er.getUserByID(userID)) {
         er.saveUserEvent(userID, eventID);
         
@@ -137,8 +157,8 @@ app.get('/bookmarked', (req, res) => {
 })
 
 // add custom error page
-app.get('/*', (req,res) => {
-    res.sendFile(path.join(__dirname+'/public/404.html'));
+app.get('*', (req,res) => {
+    res.status(404).sendFile(__dirname+'/public/404.html');
   });
 
 

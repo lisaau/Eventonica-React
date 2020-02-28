@@ -3,12 +3,28 @@ if (!moment) {
     moment().format();   
 }
 
+// DATABASE
+const pgp = require('pg-promise')(/* options */)
+const db = pgp('postgres://tpl619_2@localhost:5432/eventonica')
+
 class EventRecommender {
     constructor() {
     // All main properties should go here.
         this.events = [];
         this.users = [];
         this.bookmarkedEvents = {}
+    }
+
+    // return promise of users from users table in DB
+    getAllUsers() {
+        return db.any('SELECT * FROM users')
+        .then(function(data) {
+            // transforming users in DB with correct key;
+            let transformedData = data.map( row => {
+                return new User(row.user_name, row.user_id)
+            })
+            return transformedData;
+        })
     }
 
     // eventDate is {'year': YYYY, 'month': MM, 'day': DD}
@@ -22,14 +38,19 @@ class EventRecommender {
         this.events.push(new Event(eventID, eventDate, eventName, eventCategory, eventLocation));
     }
 
+    // FIX THEN SECTION. CHECK IF PROMISE IS ACTUALLY HANDLED
     addUser(userName, userID) {
     // Adds a new User to the System if the user doesn't exist already
-        for(let user of this.users) {
-            if(user.userID === userID) {
-                return "This user already exists";
-            }
-        }
-        this.users.push(new User(userName, userID));
+        // for(let user of this.users) {
+        //     if(user.userID === userID) {
+        //         return "This user already exists";
+        //     }
+        // }
+        // this.users.push(new User(userName, userID));
+        return db.one('INSERT INTO users (user_name, user_id) VALUES($1, $2)', [userName, userID])
+        .then(function(data) {
+            console.log(data);    
+        })
     }
 
     // expects numbers for the ID's
