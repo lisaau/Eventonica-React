@@ -133,16 +133,47 @@ class EventRecommender {
 
     // return array of events that match 
     // pass in object of numbers since input fields take in year, month, day separately
-    findEventsByDate({year, month, day}){
-        const result = [];
+    // findEventsByDate({year, month, day}){
+    findEventsByDate(dateString){
+        // const result = [];
         
-        for (let event of this.events) {                    
-            if (year === event.eventDate.year || month + 1 === event.eventDate.month + 1 || day === event.eventDate.day) {
-                result.push(event);
-            }
-        }
+        // for (let event of this.events) {                    
+        //     if (year === event.eventDate.year || month + 1 === event.eventDate.month + 1 || day === event.eventDate.day) {
+        //         result.push(event);
+        //     }
+        // }
         
-        return result;
+        // return result;
+
+        // let databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-%|%-$2-%|%-$3)\'';
+        // let variables;
+        // if (Number.isNaN(year) && Number.isNaN(month)) {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'%-$1\''
+        //     variables = [day]
+        // } else if (Number.isNaN(year) && Number.isNaN(day)) {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'(%-$2-%)\''
+        // } else if (Number.isNaN(day) && Number.isNaN(month)) {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-%)\''
+        //     variables = [year]
+        // } else if (Number.isNaN(year)) {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'(%-$2-$3)\''
+        // } else if (Number.isNaN(month)) {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-__-$3)\''
+        // } else if (Number.isNaN(day)) {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-$2-%)\''
+        // } else {
+        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-$2-$3)\''
+        // }
+        console.log('dateString in findEventsByDate: ', dateString);
+        
+        return db.any('SELECT * FROM events WHERE event_date = $1', dateString)
+        .then(function(data) {
+            // transforming users in DB with correct key;
+            let transformedData = data.map( row => {
+                return new Event(row.event_id, row.event_date, row.event_name, row.event_category, row.event_location)
+            })
+            return transformedData;
+        })
     }
     
     // Returns all events in a given category
@@ -165,7 +196,7 @@ class EventRecommender {
 class Event {
     constructor(eventID, eventDate, eventName, eventCategory, eventLocation) {
         this.eventID = eventID || Math.floor(Math.random() * 100000);
-        this.eventDate = eventDate; // expect date string object in input {yyyy, mm, dd}
+        this.eventDate = eventDate; // expect date string 'YYYY-MM-DD'
         this.eventName = eventName;
         this.eventCategory = eventCategory;
         this.eventLocation = eventLocation;
@@ -176,10 +207,6 @@ class User {
     constructor(userName, userID) {
         this.userName = userName;
         this.userID = userID || Math.floor(Math.random() * 100000);
-    }
-    
-    getUserID() {
-        return this.userID;
     }
 }
 

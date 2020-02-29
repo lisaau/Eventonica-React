@@ -184,11 +184,13 @@
                 <div class="col">
                     <h3>Find Events by Date</h3>
                     <form id="date-search" action="/events-by-date" method="GET">
-                        <label>Event date:</label>
+                        <!-- <label>Event date:</label>
                         <br>
                         <input type="text" placeholder="Year" id="date-search-year" aria-label="Year">
                         <input type="text" placeholder="Month" id="date-search-month" aria-label="Month">
-                        <input type="text" placeholder="Day" id="date-search-day" aria-label="Day">
+                        <input type="text" placeholder="Day" id="date-search-day" aria-label="Day"> -->
+                        <label for="add-event-date">Event date:</label>
+                        <input type="date" id="search-event-date" required>
                         <br/>
                         <input type="submit" id="date-search-submit" value="Search">
                     </form>

@@ -141,13 +141,15 @@ $(document).ready( () => {
                 let message = ''
                 for (let [i, event] of events.entries()) {
                     let TMeventName = event.name;
-                    let TMeventDate = event.dates.start.localDate.split("-"); //SPLIT THIS OUT INTO YEAR, MONTH, DAY
+                    // let TMeventDate = event.dates.start.localDate.split("-"); //SPLIT THIS OUT INTO YEAR, MONTH, DAY
+                    let TMeventDate = event.dates.start.localDate; //SPLIT THIS OUT INTO YEAR, MONTH, DAY
                     let TMeventCategory = event.classifications["0"].segment.name;
                     let TMeventLocation = event._embedded.venues["0"].name;
-    
+                    
                     // event info that will then get serialized to JSON, encoded, and passed into the data attribute of checkbox.
                     // normally would just pass in Ticketmaster eventID but given that there's not a lot of parameters and we had set it up this way, in this case we will proceed with hardcoding event info 
-                    let dataEventJSON = {'eventName': TMeventName, 'eventCategory': TMeventCategory, 'eventLocation': TMeventLocation, 'eventDate': {'year': parseInt(TMeventDate[0]),'month': parseInt(TMeventDate[1]), 'day': parseInt(TMeventDate[2])}};
+                    // let dataEventJSON = {'eventName': TMeventName, 'eventCategory': TMeventCategory, 'eventLocation': TMeventLocation, 'eventDate': {'year': parseInt(TMeventDate[0]),'month': parseInt(TMeventDate[1]), 'day': parseInt(TMeventDate[2])}};
+                    let dataEventJSON = {'eventName': TMeventName, 'eventCategory': TMeventCategory, 'eventLocation': TMeventLocation, 'eventDate': TMeventDate};
 
                     let results = 
                     `<li class="TM-event-search-result">
@@ -173,6 +175,7 @@ $(document).ready( () => {
                     document.getElementById("btn").addEventListener("click", () => {                        
                         for (let event of $("#event-search-result input:checked")) {
                             let eventInformation = JSON.parse(decodeURIComponent(event.dataset.eventjson))
+
                             
                             let request = $.ajax( {
                                 method: "POST",
@@ -196,13 +199,17 @@ $(document).ready( () => {
         
         $("#date-search").submit((e) => {
             e.preventDefault();
-            let year = parseInt($("#date-search-year").val());
-            let month = parseInt($("#date-search-month").val()) - 1;
-            let day = parseInt($("#date-search-day").val());
+            // let year = parseInt($("#date-search-year").val());
+            // let month = parseInt($("#date-search-month").val()) - 1;
+            // let month = parseInt($("#date-search-month").val());
+            // let day = parseInt($("#date-search-day").val());
+            // console.log(year, month, day);
+            let dateString = $('#search-event-date').val();
             
             let request = $.ajax( {
                 method: "GET",
-                url: `/events-by-date?year=${year}&month=${month}&day=${day}`
+                // url: `/events-by-date?year=${year}&month=${month}&day=${day}`
+                url: `/events-by-date?dateString=${dateString}`
             });
             
             request.done( () => {               

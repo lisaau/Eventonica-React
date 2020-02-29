@@ -111,18 +111,23 @@ app.delete('/event/', async (req, res) => {
 // inputs are from params
 // returns an array
 app.get('/events-by-date/', (req, res) => {
-    const year = parseInt(req.query.year); 
-    const month = parseInt(req.query.month);
-    const day = parseInt(req.query.day);
+    // const year = parseInt(req.query.year); 
+    // const month = parseInt(req.query.month);
+    // const day = parseInt(req.query.day);
+    // const dateString = Object.keys(req.query)[0] // date string is stored in the key of the req.query object
+    // const {dateString} = req.query // date string is stored in the key of the req.query object
+    // console.log('req.query from events-by-date:req.query', Object.keys(req.query)[0]);
     
-    res.json(er.findEventsByDate({'year': year, 'month': month, 'day': day}));
+    // res.json(er.findEventsByDate({'year': year, 'month': month, 'day': day}));
+    // er.findEventsByDate({'year': year, 'month': month, 'day': day}).then(transformedData => res.json(transformedData));
+    er.findEventsByDate(req.query.dateString).then(transformedData => res.json(transformedData));
 })
 
 // get array of events by category 
 // inputs are from params
 // returns an array
 app.get('/events-by-category/', (req, res) => {
-    console.log(req.query, req.query.eventCategory);
+    // console.log(req.query, req.query.eventCategory);
     
     er.findEventsByCategory(req.query.eventCategory).then( transformedData => res.json(transformedData));
 })
