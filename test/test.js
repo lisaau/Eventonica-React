@@ -29,11 +29,11 @@ describe("GET", function() {
         .end(function(err,res){
             if (err) return done(err);
             res.text.should.match(/Sorry/)
-            res.status.should.equal(404);
             done();
         });
     });
 
+    // doesn't actually check if it returns an array yet..
     it("GET/users should return an array of users",function(done){
         server
         .get("/users")
@@ -61,7 +61,7 @@ describe("GET", function() {
 
 describe("POST", function() {
     it("POST/user should add a user",function(done){
-        let data = {userName: 'test', userID: 10};
+        let data = {userName: 'test'};
         server
         .post('/user')
         .set('Content-type', "application/x-www-form-urlencoded")
@@ -72,7 +72,7 @@ describe("POST", function() {
             server
             .get('/users')
             .end(function(err, res) {
-                res.body[2].userID.should.equal(data.userID); // look at the third User in the array since there are currently 2 hardcoded users set in EventRecommender
+                res.body[res.body.length - 1].userName.should.equal(data.userName); 
                 done()
             })
         })
@@ -80,32 +80,37 @@ describe("POST", function() {
       });
 });
 
-
+// need to change so that it posts a new user and event id, then add event for that user, then check if it was added
 describe("PUT", function() {
     it("PUT/bookmarked should update bookmarked events for user",function(done){
+        let data = {userID: 17, eventID: 1};
         server
         .put('/bookmarked')
-        .query({userID : 12345, eventID : 11111})
+        .set('Content-type', "application/x-www-form-urlencoded")
+        .send(data)
+        .query({userID : 1, eventID : 1})
         .expect("Content-type",/text\/html/)
         .expect(200)
         .then( () => {
             server
             .get('/bookmarked')
             .end(function(err, res) {
-                console.log(res.body);
-                res.body['12345'][0].should.equal(11111);
+                res.body[0].user_id.should.equal(17);
                 done()
             })
         })
       });
 });
 
+
+// need to change so that it checks if the eventID is gone
+// need a more general way to check
 describe("DELETE", function() {
-    it("DELETE/event should delete an event",function(done){
+    it("DELETE/user should delete a user",function(done){
         server
-        .delete('/event')
+        .delete('/user')
         .set('Content-type', "application/x-www-form-urlencoded")
-        .send({eventID : 22222})
+        .send({userID : 47})
         .expect("Content-type",/text\/html/)
         .expect(200)
         .end(function(err,res){
