@@ -77,13 +77,9 @@ $(document).ready( () => {
         e.preventDefault();
         let id = parseInt($("#add-event-id").val());
         let name = $("#add-event-name").val();
-        // let date = $("#add-event-date").val().split("-"); // SPLIT INTO YEAR, MONTH, DAY
         let eventDate = $("#add-event-date").val(); // create date string YYY-MM-DD to fit DB format
         let category = $("#add-event-category").val();
         let location = $("#add-event-location").val();
-        // let eventDate = {'year': parseInt(date[0]), 'month': parseInt(date[1]) - 1, 'day': parseInt(date[2])};
-        console.log(eventDate);
-        
 
         let request = $.ajax( {
             method: "POST",
@@ -109,7 +105,7 @@ $(document).ready( () => {
         })
 
         request.done( () => {
-            console.log("successfully deleted  event");
+            console.log("successfully deleted event");
             displayEvents();
             displayBookmarkedEvents(); // re-renders in case event that had been saved by any user and the event is deleted
         })
@@ -143,14 +139,10 @@ $(document).ready( () => {
                 let message = ''
                 for (let [i, event] of events.entries()) {
                     let TMeventName = event.name;
-                    // let TMeventDate = event.dates.start.localDate.split("-"); //SPLIT THIS OUT INTO YEAR, MONTH, DAY
-                    let TMeventDate = event.dates.start.localDate; //SPLIT THIS OUT INTO YEAR, MONTH, DAY
+                    let TMeventDate = event.dates.start.localDate; 
                     let TMeventCategory = event.classifications["0"].segment.name;
                     let TMeventLocation = event._embedded.venues["0"].name;
                     
-                    // event info that will then get serialized to JSON, encoded, and passed into the data attribute of checkbox.
-                    // normally would just pass in Ticketmaster eventID but given that there's not a lot of parameters and we had set it up this way, in this case we will proceed with hardcoding event info 
-                    // let dataEventJSON = {'eventName': TMeventName, 'eventCategory': TMeventCategory, 'eventLocation': TMeventLocation, 'eventDate': {'year': parseInt(TMeventDate[0]),'month': parseInt(TMeventDate[1]), 'day': parseInt(TMeventDate[2])}};
                     let dataEventJSON = {'eventName': TMeventName, 'eventCategory': TMeventCategory, 'eventLocation': TMeventLocation, 'eventDate': TMeventDate};
 
                     let results = 
@@ -200,16 +192,10 @@ $(document).ready( () => {
         
         $("#date-search").submit((e) => {
             e.preventDefault();
-            // let year = parseInt($("#date-search-year").val());
-            // let month = parseInt($("#date-search-month").val()) - 1;
-            // let month = parseInt($("#date-search-month").val());
-            // let day = parseInt($("#date-search-day").val());
-            // console.log(year, month, day);
             let dateString = $('#search-event-date').val();
             
             let request = $.ajax( {
                 method: "GET",
-                // url: `/events-by-date?year=${year}&month=${month}&day=${day}`
                 url: `/events-by-date?dateString=${dateString}`
             });
             
