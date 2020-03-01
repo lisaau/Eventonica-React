@@ -34,8 +34,8 @@ $(document).ready( () => {
             console.log("successfully added user");
             displayUsers();
         })
-        request.fail( () => console.log("failed to add user"))
-    })
+        request.fail( () => console.log("failed to add user"));
+    });
         
     $("#delete-user").submit((e) => {
         e.preventDefault();
@@ -48,10 +48,11 @@ $(document).ready( () => {
         });
 
         request.done( () => {
-            console.log("successfully deleted user", request.data);
+            console.log("successfully deleted user");
             displayUsers();
-        })
-        request.fail( () => console.log("failed to delete user", request.data))
+            displayBookmarkedEvents(); // re-renders in case a user who has saved events is deleted
+        });
+        request.fail( () => console.log("failed to delete user"));
     })
         
     function displayEvents() {
@@ -110,6 +111,7 @@ $(document).ready( () => {
         request.done( () => {
             console.log("successfully deleted  event");
             displayEvents();
+            displayBookmarkedEvents(); // re-renders in case event that had been saved by any user and the event is deleted
         })
         request.fail( () => console.log("failed to delete event"))
     })
@@ -175,7 +177,6 @@ $(document).ready( () => {
                     document.getElementById("btn").addEventListener("click", () => {                        
                         for (let event of $("#event-search-result input:checked")) {
                             let eventInformation = JSON.parse(decodeURIComponent(event.dataset.eventjson))
-
                             
                             let request = $.ajax( {
                                 method: "POST",
@@ -230,7 +231,8 @@ $(document).ready( () => {
         $("#category-search").submit((e) => { 
             e.preventDefault();
             let eventCategory = $("#category-search-id").val(); 
-            if (eventCategory === 'arts & theatre') {
+            // the & sign doesn't convert correctly. added if statement to handle that case
+            if (eventCategory === 'Arts & Theatre') {
                 eventCategory = 'Arts%20%26%20Theatre';
             }
 
@@ -252,10 +254,6 @@ $(document).ready( () => {
             })
         })
     
-        // Only displays userID and eventID. eventIDs are not formatted nicely. Will get userName and event names another time. 
-        // Options(?):
-        // create new endpoint in index.js where I get the entire EventRecommender object but that's a lot and not ideal but I will have access to Users and Events 
-        // otherwise I can make 2 more ajax calls with the APIs I've already created to get the Users and Events but may have to next some request.done and that's too much for my brain right now at 1am
         function displayBookmarkedEvents() {
             let requestBookmarked = $.ajax( {
                 method: "GET",
@@ -263,17 +261,23 @@ $(document).ready( () => {
             });
 
             requestBookmarked.done( () => {
-                let displayBookmarkedEventsText = '';
-
-                for (let userID in requestBookmarked.responseJSON) {
-                    displayBookmarkedEventsText += `<li> ${userID} - ${requestBookmarked.responseJSON[userID]}</li>`;
+                // creates string of HTML where users are in an unordered list and the events are in a sub unordered list
+                let displayBookmarkedEventsText = `<li>${requestBookmarked.responseJSON[0].user_name}<ul>`;
+                let currUser = requestBookmarked.responseJSON[0].user_id; 
+                for (let userEvent of requestBookmarked.responseJSON) {
+                    if (currUser === userEvent.user_id) {
+                        displayBookmarkedEventsText += ` <li>${userEvent.event_name}</li>`;
+                        
+                    } else {
+                        displayBookmarkedEventsText += `</ul></li><li> ${userEvent.user_name}<ul><li>${userEvent.event_name}`;
+                        currUser = userEvent.user_id;
+                    }
                 }
                 $("#saved-events-users").html(displayBookmarkedEventsText);
             })
          }
      
-        // Would normally display all the pre-loaded bookmarked events but since it's not very pretty right now, let's leave it out
-        //  displayBookmarkedEvents();
+         displayBookmarkedEvents();
     
         $("#save-user-event").submit( (e) => {
             e.preventDefault();
@@ -285,6 +289,8 @@ $(document).ready( () => {
                 url: `/bookmarked?userID=${userID}&eventID=${eventID}`, 
             });
              
-            displayBookmarkedEvents()
+            request.done( () => {
+                displayBookmarkedEvents();
+            });
         })    
 })

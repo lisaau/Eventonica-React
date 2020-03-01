@@ -137,29 +137,34 @@ app.get('/events-by-category/', (req, res) => {
 // checks if both eventID and userID already exist in Event Recommender
 // does not return anything
 // accepts userID and eventID in query params
-app.put('/bookmarked', (req, res) => {
+app.put('/bookmarked', async (req, res) => {
     const userID = parseInt(req.query.userID);
     const eventID = parseInt(req.query.eventID);
     
-    if (er.getEventByID(eventID) && er.getUserByID(userID)) {
-        er.saveUserEvent(userID, eventID);
+    await er.saveUserEvent(userID, eventID);
+    res.status(200).send(`Event ${eventID} is saved for user ${userID}`);
+
+
+    // if (er.getEventByID(eventID) && er.getUserByID(userID)) {
+    //     er.saveUserEvent(userID, eventID);
         
-        res.status(200).send(`Saved event (${eventID}, ${er.getEventByID(eventID).eventName}) for user (${userID}, ${er.getUserByID(userID).userName})`);
-    } else {
-        res.status(400).send('Event or user was not found'); // TO DO: maybe split up the error so we can tell if it's the event or user doesn't exist
-    }
+    //     res.status(200).send(`Saved event (${eventID}, ${er.getEventByID(eventID).eventName}) for user (${userID}, ${er.getUserByID(userID).userName})`);
+    // } else {
+    //     res.status(400).send('Event or user was not found'); // TO DO: maybe split up the error so we can tell if it's the event or user doesn't exist
+    // }
 })
 
 // gets all bookmarked events 
 // converts value from Set to array (sets don't send well over network)
 app.get('/bookmarked', (req, res) => {
     // console.log({...er.bookmarkedEvents});
-    let bookmarkedEvents = {...er.bookmarkedEvents};
-    for (let user in bookmarkedEvents) {
-        bookmarkedEvents[user] = Array.from(bookmarkedEvents[user]);
-    }
+    // let bookmarkedEvents = {...er.bookmarkedEvents};
+    // for (let user in bookmarkedEvents) {
+    //     bookmarkedEvents[user] = Array.from(bookmarkedEvents[user]);
+    // }
     
-    res.json(bookmarkedEvents) // json string of object where key is userID and value is Set of eventID
+    // res.json(bookmarkedEvents) // json string of object where key is userID and value is Set of eventID
+    er.getUserEvents().then(data => res.status(200).send(data));
 })
 
 // add custom error page

@@ -25,7 +25,7 @@ class EventRecommender {
                 return new User(row.user_name, row.user_id)
             })
             return transformedData;
-        })
+        });
     }
     
     addUser(userName) {
@@ -118,18 +118,30 @@ class EventRecommender {
     // expects numbers for the ID's
     // initialize new Set if user never saved an event
     // add eventID to the Set for the user
+    // IDs are numbers
     saveUserEvent(userID, eventID){
-        // checks if user and event exists already
-        let user = this.getUserByID(userID); // user object
-        let event = this.getEventByID(eventID); // event object
+        return db.none('INSERT INTO user_events (user_id, event_id) VALUES($1, $2)', [userID, eventID])
+        .then(result =>  {
+            console.log(result)
+        })
+        .catch(error => {
+            console.log('ERROR:', error);
+        });
+
+        // // checks if user and event exists already
+        // let user = this.getUserByID(userID); // user object
+        // let event = this.getEventByID(eventID); // event object
         
-        if (!this.bookmarkedEvents[user.getUserID()]) {
-            this.bookmarkedEvents[user.getUserID()] = new Set();
-        }
-        this.bookmarkedEvents[user.getUserID()].add(eventID);
+        // if (!this.bookmarkedEvents[user.getUserID()]) {
+        //     this.bookmarkedEvents[user.getUserID()] = new Set();
+        // }
+        // this.bookmarkedEvents[user.getUserID()].add(eventID);
     }
     
-
+    // gets events saved by users. table includes user's id, name, and event's name. table sorted by user id
+    getUserEvents() {
+        return db.any('SELECT user_events.user_id, events.event_name, users.user_name FROM user_events INNER JOIN events ON events.event_id = user_events.event_id INNER JOIN users ON users.user_id = user_events.user_id ORDER BY user_events.user_id')
+    }
 
     // return array of events that match 
     // pass in object of numbers since input fields take in year, month, day separately
@@ -144,26 +156,6 @@ class EventRecommender {
         // }
         
         // return result;
-
-        // let databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-%|%-$2-%|%-$3)\'';
-        // let variables;
-        // if (Number.isNaN(year) && Number.isNaN(month)) {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'%-$1\''
-        //     variables = [day]
-        // } else if (Number.isNaN(year) && Number.isNaN(day)) {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'(%-$2-%)\''
-        // } else if (Number.isNaN(day) && Number.isNaN(month)) {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-%)\''
-        //     variables = [year]
-        // } else if (Number.isNaN(year)) {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'(%-$2-$3)\''
-        // } else if (Number.isNaN(month)) {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-__-$3)\''
-        // } else if (Number.isNaN(day)) {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-$2-%)\''
-        // } else {
-        //     databaseQuery = 'SELECT * FROM events WHERE event_date SIMILAR TO \'($1-$2-$3)\''
-        // }
         console.log('dateString in findEventsByDate: ', dateString);
         
         return db.any('SELECT * FROM events WHERE event_date = $1', dateString)
@@ -209,10 +201,6 @@ class User {
         this.userID = userID || Math.floor(Math.random() * 100000);
     }
 }
-
-// const er = new EventRecommender();
-// er.addEvent({'eventName': "Some Magical Event", 'eventDate': {'year': 2020, 'month': 01, 'day': 01}, 'eventCategory': "Arts & Theatre", 'eventLocation': "A Magical World Somewhere", 'eventID': 11111});
-// console.log(er.findEventsByDate({'year': 2020}));
 
 if (typeof module != 'undefined'){
     module.exports = { EventRecommender, User,  Event} 
