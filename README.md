@@ -22,9 +22,15 @@ This builds on the [Eventonica project](https://github.com/lisaau/Eventonica) an
    psql eventonica < eventonica.sql 
    ```
 
-4. View the site on http://localhost:3000/
+4. Run the Express server by running:
 
-5. Running Mocha tests/Supertest - integration tests to test REST API's written in ExpressJS
+   ```bash
+   node index.js
+   ```
+
+5. View the site on http://localhost:3000/
+
+6. Running Mocha tests/Supertest - integration tests to test REST API's written in ExpressJS
 
    - Use `mocha` to run integration tests
 
