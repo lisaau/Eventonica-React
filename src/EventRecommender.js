@@ -2,10 +2,10 @@ if (!moment) {
     var moment = require('moment');
     moment().format();   
 }
-
+require('dotenv').config()
 // DATABASE
 const pgp = require('pg-promise')(/* options */)
-const db = pgp('postgres://tpl619_2@localhost:5432/eventonica')
+const db = pgp(process.env.DB_URL);
 
 class EventRecommender {
     constructor() {
