@@ -112,10 +112,6 @@ COPY public.events (event_id, event_date, event_name, event_category, event_loca
 3	2020-06-27	Corgi Con	Sports	Ocean Beach
 8	2020-03-14	Dance Gavin Dance	Music	Marquee Theatre
 9	2020-07-11	Drag Diva Brunch: Beyonce	Arts & Theatre	Punch Line Comedy Club - Sacramento
-11	\N	\N	\N	\N
-10	\N	\N	\N	\N
-13	\N	\N	\N	\N
-12	\N	\N	\N	\N
 \.
 
 
