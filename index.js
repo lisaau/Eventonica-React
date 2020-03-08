@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(morgan('tiny'));
 
 // serve static files
@@ -22,10 +23,11 @@ app.get('/users', (req, res) => {
 // adds one user (key = 'username', value = name of user as a string)
 // input taken from body
 // does not return anything
-app.post('/user', async (req, res) => {
+app.post('/user', (req, res) => {
     const userName = req.body.userName;
-    await er.addUser(userName);
-    res.status(200).send('User is added to the "database"');
+    console.log('Got body:', req.body);
+    er.addUser(userName).then(transformedData => res.status(200).send(transformedData));
+    // res.status(200).send('User is added to the "database"');
 });
 
 // deletes one user by userID (number)

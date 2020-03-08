@@ -17,7 +17,7 @@ class EventRecommender {
     // USERS
     // return promise of users from users table in DB
     getAllUsers() {
-        return db.any('SELECT * FROM users')
+        return db.any('SELECT * FROM users ORDER BY user_id')
         .then(function(data) {
             // transforming users in DB with correct key;
             let transformedData = data.map( row => {
@@ -27,10 +27,23 @@ class EventRecommender {
         });
     }
     
+    // returns the added user
     addUser(userName) {
-        return db.none('INSERT INTO users (user_name) VALUES($1)', [userName])
-        .then(function() {
-            console.log("User is added to the database");    
+        console.log('addUser userName ', userName);
+        
+        return db.one('INSERT INTO users (user_name) VALUES($1) RETURNING *', [userName])
+        .then(function(data) {
+            console.log('addUser data ', data);
+            
+            return new User(data.user_name, data.user_id);
+            // console.log('data is', data);
+            
+            // let transformedData = data.map( row => {
+            //     return new User(row.user_name, row.user_id)
+            // })
+            // console.log(transformedData);
+            
+            // return transformedData;
         })
         .catch( error => {
             console.log(error);
@@ -40,7 +53,7 @@ class EventRecommender {
     deleteUser(userID) {
         return db.result('DELETE FROM users WHERE user_id = $1', userID)
         .then( function() {
-            console.log('User is deleted')
+            console.log('User is deleted');
         })
         .catch(error => {
             console.log('ERROR:', error);
