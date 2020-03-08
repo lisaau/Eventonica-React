@@ -1,5 +1,7 @@
 # Eventonica
 
+NOTE: This version of Eventonica is the same as Eventonica-Postgres except some APIs were adjusted when creating the React frontend.
+
 [Eventonica](https://github.com/Techtonica/curriculum/tree/master/projects/eventonica) is a web app to manage events from Techtonica's curriculum.
 
 This builds on the [Eventonica project](https://github.com/lisaau/Eventonica) and includes [Part 6 - Postgres Database](https://github.com/Techtonica/curriculum/blob/master/projects/eventonica/eventonica-part6-postgres.md).
