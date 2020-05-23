@@ -1,18 +1,15 @@
 const express = require('express');
-const { EventRecommender, User,  Event}  = require('./src/EventRecommender');
-const er = new EventRecommender();
-
-// MIDDLEWARE
+const { EventRecommender }  = require('./src/EventRecommender');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+
+const er = new EventRecommender();
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
-
-// serve static files
-app.use(express.static('public'))
+app.use(express.static('public')) // serve static files
 
 
 // gets array of all users (each user is an object). returns an array

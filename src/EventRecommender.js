@@ -29,12 +29,8 @@ class EventRecommender {
     
     // returns the added user
     addUser(userName) {
-        console.log('addUser userName ', userName);
-        
         return db.one('INSERT INTO users (user_name) VALUES($1) RETURNING *', [userName])
         .then(function(data) {
-            console.log('addUser data ', data);
-            
             return new User(data.user_name, data.user_id);
         })
         .catch( error => {
@@ -67,8 +63,7 @@ class EventRecommender {
 
     addEvent({eventDate, eventName, eventCategory, eventLocation}) {
         return db.one('INSERT INTO events (event_date, event_name, event_category, event_location) VALUES($1, $2, $3, $4) RETURNING *', [eventDate, eventName, eventCategory, eventLocation])
-        .then(function() {
-            console.log("Event is added to the database");    
+        .then(function() {  
             return new Event({eventDate, eventName, eventCategory, eventLocation})
         })
         .catch( error => {
