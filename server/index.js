@@ -82,11 +82,6 @@ app.get('/bookmarked', (req, res) => {
     er.getUserEvents().then(data => res.status(200).send(data));
 })
 
-// add custom error page
-app.get('*', (req,res) => {
-    res.status(404).sendFile(__dirname+'/public/404.html');
-  });
-
 
 const PORT = 3000;
 app.listen(PORT, () => {
