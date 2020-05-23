@@ -36,14 +36,6 @@ class EventRecommender {
             console.log('addUser data ', data);
             
             return new User(data.user_name, data.user_id);
-            // console.log('data is', data);
-            
-            // let transformedData = data.map( row => {
-            //     return new User(row.user_name, row.user_id)
-            // })
-            // console.log(transformedData);
-            
-            // return transformedData;
         })
         .catch( error => {
             console.log(error);
@@ -74,9 +66,10 @@ class EventRecommender {
     }
 
     addEvent({eventDate, eventName, eventCategory, eventLocation}) {
-        return db.none('INSERT INTO events (event_date, event_name, event_category, event_location) VALUES($1, $2, $3, $4)', [eventDate, eventName, eventCategory, eventLocation])
+        return db.one('INSERT INTO events (event_date, event_name, event_category, event_location) VALUES($1, $2, $3, $4) RETURNING *', [eventDate, eventName, eventCategory, eventLocation])
         .then(function() {
             console.log("Event is added to the database");    
+            return new Event({eventDate, eventName, eventCategory, eventLocation})
         })
         .catch( error => {
             console.log(error);

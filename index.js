@@ -27,7 +27,6 @@ app.post('/user', (req, res) => {
     const userName = req.body.userName;
     console.log('Got body:', req.body);
     er.addUser(userName).then(transformedData => res.status(200).send(transformedData));
-    // res.status(200).send('User is added to the "database"');
 });
 
 // deletes one user by userID (number)
@@ -44,10 +43,9 @@ app.get('/events', (req, res) => {
 
 // adds one event, does not return anything 
 // required parameter: eventDate (string as YYYY-MM-DD), eventName (string), eventCategory (string), eventLocation (string))
-app.post('/event', async (req, res) => {
+app.post('/event', (req, res) => {
     let {eventName, eventCategory, eventLocation, eventDate} = req.body;
-    await er.addEvent({'eventName': eventName, 'eventDate': eventDate, 'eventCategory': eventCategory, 'eventLocation': eventLocation});
-    res.status(200).send('Event is added to the "database"');
+    er.addEvent({'eventName': eventName, 'eventDate': eventDate, 'eventCategory': eventCategory, 'eventLocation': eventLocation}).then(event => res.status(200).send(event));
 });
 
 // deleted one event by eventID (number)
